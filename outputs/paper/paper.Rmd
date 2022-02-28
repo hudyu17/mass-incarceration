@@ -714,6 +714,52 @@ abline(v=seq(1985, 2015, 10), h=seq(-60,40, 20), col="gray",lty=3)
 Figure \@ref(fig:rehab-part) shows the original paper's visualisation of participation rates for inmates across 25 years. We used the same dataset to plot the percentage change between years instead in Figure \@ref(fig:rehab-part-new), providing another angle with which to view the original data. At a high level, our reproduction reinforces the original claim that rehabilitation programs are in decline amidst the generally worsening conditions of prison. This new lens also reveals several pockets of strength, where the rate of change of participation is growing or declining less severely. These 2 insights can offer an actionable way forwards to improving the state of incarceration. 
 
 
+
+
+\newpage
+
+# Discussion
+
+## The Retreat from Rehabilitation
+
+The original paper explores the divided consensus on prison rehabilitation, taking a section to cover its evolution and historically mixed results. It concludes that such rehabilitation programs have slightly positive effects, yet participation in them has decreased as deteriorating in-prison factors like healthcare have pulled attention away from bettering the post-incarceration lives of inmates.
+
+The concept of captive rehabilitation in the US has roots in the Jacksonian period, where the purpose of prisons were re-cast as being for correction in addition to penalty. Work and education programs were prioritized, slowly usurping traditional elements of incarceration like whipping. However, evaluations of such strategies post-WW2 were largely inconclusive when determining welfare improvements or reductions in recidivism. Skepticism grew, forcing programs to evolve further under new theories; for example, the Canadian-born Risk Principle proposed that the level of intervention should be proportional to an individual’s risk of re-offending. 
+
+The original section culminates in examining inmate participation of rehabilitation programs in the US, with Figure \@ref(fig:rehab-part) showing the original plot of participation rates across 4 program types (Drugs, Education, Job Training, Work Assignments) and 4 regions (Northeast, Midwest, South, West). Initial analysis showed that participation appeared to be generally higher in the Northeast, yet there is no region that is definitively higher or lower across the board. What is apparent is a broad reduction in participation across all programs and regions, although the severity of this change is difficult to quantify. 
+
+However, the context that these programs are provided within can heavily influence participation, a limitation that the original paper acknowledges but does not address in depth. In particular, the supply of programs likely varies across prisons and is constrained on a whole, making participation beyond a certain point theoretically impossible. Program slots are unlikely to have matched the massive increase in total inmates, lessening their effectiveness and potentially kicking off a vicious cycle; decreasing rehabilitation availability can lead to increased recidivism, straining those same programs that have not expanded to serve already-bloated numbers. It is therefore important to understand that declining participation rates can be a symptom of both supply- and demand-side issues. 
+
+This original plot (Figure \@ref(fig:rehab-part)) and accompanying interpretations raised some questions, chiefly regarding the chosen segmentation by region and program type. On the former, looking at 4 regions provides more granularity than examining the US as a whole, but still obscures key differences in a country that differs heavily from state to state. The relevant survey data for every state may be difficult to obtain, as the datasets used here were pre-aggregated into regions; a more feasible extension could be to dive deep into a region that exhibits more unique characteristics, such as the South and a stark decrease in drug program participation. Another dimension to evaluate could be the rural/urban split; perhaps participation differs based on prospective opportunities in neighboring areas, of which a rural/urban split could play a large influence. The segmentation by program type is pre-set by datasets from the Bureau of Justice Statistics (BJS), rendering a different split significantly more difficult to obtain. On a whole, we feel that the specificity of examining these 4 programs through the lens of 4 particular regions could obscure insights regarding the effectiveness of these programs and potential improvements. 
+
+We elected to take the same segmentation but plot percentage change in participation instead of absolute rates (Figure \@ref(fig:rehab-part-new)), hoping to tease out additional insights from the same dataset. In particular, we set out to evaluate whether face-value insights like the south being different to other regions were obscuring other angles of the situation. Using the same dataset does create inherent limitations, but allows for better comparison with the original findings. The availability of more detailed BJS data also played a role in this decision, as the survey used in the original paper was already one of the more comprehensive instruments on the topic. 
+
+With the added dimension of percentage change, we concluded the following from a descriptive point of view: 
+
+- The South does seems to differ on drug program participation from both an absolute and proportional change perspective
+- Participation in educational programs has converged in 2016, but the proportional change in participation shows that each region had a very different story to get there. Participation in job training reflects similar trends but to a less severe extent 
+- Participation in work assignments seems to be trending downward in a similar pattern for all regions, and the percentage changes have instead converged to almost identical (around -20% between 1995 and 2016)
+
+There are several sobering implications from these points, primarily surrounding the effectiveness of current rehabilitation systems and specific areas to potentially target for impactful improvements. 
+
+First, it appears that participation in these programs is converging in general. This is across all regions in some way (either in actual rates or rate of change), for whatever reason - and for better or worse. These patterns combine to paint a picture of collective decline in program participation, reinforcing the claim made in the original paper. In conjunction with  other studies, both broad-based and anecdotal, we feel more confident in concluding that there is an issue with how rehabilitation programs are currently run in US prisons. Further exploration can be done on whether this is a supply or demand issue, but it reflects a key shortcoming with mass incarceration. 
+
+Second, there are pockets of growth or at least of slowing decline in rehabilitation participation. In particular, the West and South regions for education programs and job training show some strength. Governments wishing to improve their rehabilitation programs can tap into these areas of strength; increasing their effectiveness can kick off a virtuous cycle, where better post-incarceration outcomes incentivize greater participation and further investment. 
+
+The aforementioned areas could be a cost effective way of kickstarting improvements in rehabilitation programs, offering governments a method of gaining early momentum en route to improving the whole system. 
+
+
+## Race-based Health and Safety Implications
+In the general United States population, there are several potential factors that could contribute to the increase in homicide victimization affecting black people, most of which can be attributed to the staggering number of racial disparities that exist on an economic, political, environmental, and socio-cultural scale. Data measuring differences in demographic trends show that black Americans are more than twice as likely to experience poverty as white Americans, relating to issues such as the ongoing racial gap in income equality, education levels, and unemployment rates (Pew Research Center 2016). Evidence from studies conducted on a global scale show that income inequality and higher incidences of poverty are major driving forces in the rise of crime rates in societies around the world (Anser et al. 2020). 
+
+It is essential to consider these factors when examining how homicide victimization in prison affects members of different races. The persistence of violent crime in society affecting Black communities has become such a prevalent issue that their risk of victimization is notably lower in prison than in the population. The opposite is true for white people, as their risk of homicide victimization in prison is almost twice as high as their risk of non-firearm homicide in society. 
+
+While the original paper makes several useful points with regards to the age-related victimization risk both inside and outside of prison, it is certainly worth examining how these risks vary on the basis of race in order to better understand the implications of systemic racial inequality in society. 
+
+
+## Ill-prepared for the COVID crisis?
+
+
 ```{r case-original, fig.cap="Cumulative Case Rate (per 1000) on Jan 11, 2021", fig.height = 8, fig.width = 6, echo=F, warning=F}
 x <- read.csv("../../inputs/data/all-states-history.csv", header=T)                    # reading state covid data
 
@@ -793,51 +839,6 @@ legend(450, 10, c("Prison","General population"), pch=c(16, 17),
        col=c("orange","purple"), bty="n", cex=1.1)
 ```
 
-<insert some stuff>
-
-
-\newpage
-
-# Discussion
-
-## The Retreat from Rehabilitation
-
-The original paper explores the divided consensus on prison rehabilitation, taking a section to cover its evolution and historically mixed results. It concludes that such rehabilitation programs have slightly positive effects, yet participation in them has decreased as deteriorating in-prison factors like healthcare have pulled attention away from bettering the post-incarceration lives of inmates.
-
-The concept of captive rehabilitation in the US has roots in the Jacksonian period, where the purpose of prisons were re-cast as being for correction in addition to penalty. Work and education programs were prioritized, slowly usurping traditional elements of incarceration like whipping. However, evaluations of such strategies post-WW2 were largely inconclusive when determining welfare improvements or reductions in recidivism. Skepticism grew, forcing programs to evolve further under new theories; for example, the Canadian-born Risk Principle proposed that the level of intervention should be proportional to an individual’s risk of re-offending. 
-
-The original section culminates in examining inmate participation of rehabilitation programs in the US, with Figure \@ref(fig:rehab-part) showing the original plot of participation rates across 4 program types (Drugs, Education, Job Training, Work Assignments) and 4 regions (Northeast, Midwest, South, West). Initial analysis showed that participation appeared to be generally higher in the Northeast, yet there is no region that is definitively higher or lower across the board. What is apparent is a broad reduction in participation across all programs and regions, although the severity of this change is difficult to quantify. 
-
-However, the context that these programs are provided within can heavily influence participation, a limitation that the original paper acknowledges but does not address in depth. In particular, the supply of programs likely varies across prisons and is constrained on a whole, making participation beyond a certain point theoretically impossible. Program slots are unlikely to have matched the massive increase in total inmates, lessening their effectiveness and potentially kicking off a vicious cycle; decreasing rehabilitation availability can lead to increased recidivism, straining those same programs that have not expanded to serve already-bloated numbers. It is therefore important to understand that declining participation rates can be a symptom of both supply- and demand-side issues. 
-
-This original plot (Figure \@ref(fig:rehab-part)) and accompanying interpretations raised some questions, chiefly regarding the chosen segmentation by region and program type. On the former, looking at 4 regions provides more granularity than examining the US as a whole, but still obscures key differences in a country that differs heavily from state to state. The relevant survey data for every state may be difficult to obtain, as the datasets used here were pre-aggregated into regions; a more feasible extension could be to dive deep into a region that exhibits more unique characteristics, such as the South and a stark decrease in drug program participation. Another dimension to evaluate could be the rural/urban split; perhaps participation differs based on prospective opportunities in neighboring areas, of which a rural/urban split could play a large influence. The segmentation by program type is pre-set by datasets from the Bureau of Justice Statistics (BJS), rendering a different split significantly more difficult to obtain. On a whole, we feel that the specificity of examining these 4 programs through the lens of 4 particular regions could obscure insights regarding the effectiveness of these programs and potential improvements. 
-
-We elected to take the same segmentation but plot percentage change in participation instead of absolute rates (Figure \@ref(fig:rehab-part-new)), hoping to tease out additional insights from the same dataset. In particular, we set out to evaluate whether face-value insights like the south being different to other regions were obscuring other angles of the situation. Using the same dataset does create inherent limitations, but allows for better comparison with the original findings. The availability of more detailed BJS data also played a role in this decision, as the survey used in the original paper was already one of the more comprehensive instruments on the topic. 
-
-With the added dimension of percentage change, we concluded the following from a descriptive point of view: 
-
-- The South does seems to differ on drug program participation from both an absolute and proportional change perspective
-- Participation in educational programs has converged in 2016, but the proportional change in participation shows that each region had a very different story to get there. Participation in job training reflects similar trends but to a less severe extent 
-- Participation in work assignments seems to be trending downward in a similar pattern for all regions, and the percentage changes have instead converged to almost identical (around -20% between 1995 and 2016)
-
-There are several sobering implications from these points, primarily surrounding the effectiveness of current rehabilitation systems and specific areas to potentially target for impactful improvements. 
-
-First, it appears that participation in these programs is converging in general. This is across all regions in some way (either in actual rates or rate of change), for whatever reason - and for better or worse. These patterns combine to paint a picture of collective decline in program participation, reinforcing the claim made in the original paper. In conjunction with  other studies, both broad-based and anecdotal, we feel more confident in concluding that there is an issue with how rehabilitation programs are currently run in US prisons. Further exploration can be done on whether this is a supply or demand issue, but it reflects a key shortcoming with mass incarceration. 
-
-Second, there are pockets of growth or at least of slowing decline in rehabilitation participation. In particular, the West and South regions for education programs and job training show some strength. Governments wishing to improve their rehabilitation programs can tap into these areas of strength; increasing their effectiveness can kick off a virtuous cycle, where better post-incarceration outcomes incentivize greater participation and further investment. 
-
-The aforementioned areas could be a cost effective way of kickstarting improvements in rehabilitation programs, offering governments a method of gaining early momentum en route to improving the whole system. 
-
-
-## Race-based Health and Safety Implications
-In the general United States population, there are several potential factors that could contribute to the increase in homicide victimization affecting black people, most of which can be attributed to the staggering number of racial disparities that exist on an economic, political, environmental, and socio-cultural scale. Data measuring differences in demographic trends show that black Americans are more than twice as likely to experience poverty as white Americans, relating to issues such as the ongoing racial gap in income equality, education levels, and unemployment rates (Pew Research Center 2016). Evidence from studies conducted on a global scale show that income inequality and higher incidences of poverty are major driving forces in the rise of crime rates in societies around the world (Anser et al. 2020). 
-
-It is essential to consider these factors when examining how homicide victimization in prison affects members of different races. The persistence of violent crime in society affecting Black communities has become such a prevalent issue that their risk of victimization is notably lower in prison than in the population. The opposite is true for white people, as their risk of homicide victimization in prison is almost twice as high as their risk of non-firearm homicide in society. 
-
-While the original paper makes several useful points with regards to the age-related victimization risk both inside and outside of prison, it is certainly worth examining how these risks vary on the basis of race in order to better understand the implications of systemic racial inequality in society. 
-
-
-## Ill-prepared for the COVID crisis?
 ### COVID-19 Case Rates in Prison vs Population
 It was a common observation across multiple periods of time that prisons were consistently leading hotspots for COVID-19 outbreaks throughout 2020 [@Wang]. Dozens of deaths among prison staff and inmates were recorded during outbreaks at large jail facilities such as Rikers Island in New York and Cook County in Chicago. 
 
@@ -855,7 +856,9 @@ We can speculate that due to the understaffing situation, there isn’t sufficie
 
 ## Weaknesses and next steps
 
-Weaknesses and next steps should also be included.
+We feel that the primary weakness of our analysis was the limited nature of the intermediate datasets employed in the original paper. Most of the files that fed into the author's plots were already filtered in some way (e.g. scoped down to a single year), resulting in rigid data that made it difficult to manipulate further for new insights. Compounding this issue was the arcane process of obtaining some datasets; despite being publicly available, many sources need to be requested or collated across large amounts of individual files, in many cases making the pre-cleaned versions provided in the replication directory the only viable data source. 
+
+This study could go further with this existing data, or investigate these findings with other datasets. Exploring the prison systems of other countries could provide valuable insight into how incarceration is treated differently, revealing best practices for the benefit of both incarcerated individuals and the general population. 
 
 \newpage
 
