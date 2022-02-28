@@ -1,0 +1,889 @@
+---
+title: "Mass incarceration in the US can and should be improved"
+subtitle: "The current system results in undesirable outcomes, yet improvements can be made"
+author: 
+  - Alyssa Schleifer
+  - Hudson Yuen
+  - Tamsen Yau
+thanks: "Code and data are available at: https://github.com/hudyu17/mass-incarceration"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+abstract: "The American prison system has garnered its fair share of criticism, especially regarding safety and rehabilitation. This paper analyzes how prison conditions influence mass incarceration rates in the United States, as well as the extended impact these conditions have on the well-being of prisoners and subsequent recidivism rates in the population. While results suggest that current rehabilitation programs fall short on many fronts, there is still potential for improvement in areas such as social support initiatives and mental health services. Furthermore, minorities are more affected by issues such as violence and crime which points to broader issues of system inequalities that parallel those found in society. Finally, we noted several differences in COVID-19 case numbers between prisons in different states, which indicates how varying public health practices impact the overall safety of the prison system. These findings are worth considering in order to implement more effective initiatives, programs, and policies within the prison system."
+output:
+  bookdown::pdf_document2
+toc: FALSE
+bibliography: references.bib
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
+knitr::opts_chunk$set(message = FALSE)
+
+library(tidyverse)
+library(palmerpenguins)
+library(dplyr)
+library(readxl)
+library(data.table)
+```
+
+# Introduction
+
+*This reproduction was performed after a replication on the Social Science Reproduction platform: ****[link here](https://www.socialsciencereproduction.org/reproductions/f4c25f83-2c8b-448e-be76-760e02694112/index)***
+
+The current state of incarceration in the United States is a growing problem with a number of valid criticisms. There is ongoing skepticism regarding the safety of the American prison system as well as the efficacy of the current state of prison reform. By taking a closer look at the data regarding various aspects of the inner-workings of the U.S prison system, we can draw our own conclusions on many of these issues. Bruce Western's paper, [`Inside the Box: Safety, Health, and Isolation in Prison`](https://pubs.aeaweb.org/doi/pdfplus/10.1257/jep.35.4.97) examines how conditions inside prisons are connected to patterns of mass incarceration in the United States, and how they influence the well-being of prisoners and the greater impact this has on life after prison [@western]. The analysis uses data from prisons throughout the United States to touch on several specific topics such as the connection between solitary confinement and mental health, the efficacy and accessibility of different social support services, and patterns in violence and victimization as well as physical health standards and practices in prisons.  
+
+In the following paper, we will use the initial analysis from Western's publication to conduct a reproduction which will allow us to explore the original methodology and results from the data, as well as expand on Western's findings to touch on other prevalent aspects of the prison system that were left out of the initial paper. Firstly, we will conduct our own descriptive analysis of the data, followed by a comprehensive interpretation of the results and finally, a discussion on the broader implications of these results and their relevance pertaining to the issue at hand. In order to do this, we will focus on three important yet distinct areas of the data to ensure our analysis is detailed, clear, and well-rounded. Firstly, we will examine specific rehabilitative characteristics of U.S prisons and discuss potential downfalls in the system that might compromise the efficacy of the system as a whole regarding its ability to successfully reintegrate prisoners back into society. In addition, we will examine how rates of crime and violence differ based on demographic factors such as race, and how these numbers vary both within prisons and in the general population based on these same variables. Finally, we will examine prisons from a public health standpoint by examining COVID-19 case counts in different prisons across the United States to gain a better understanding of how health policies and practices impact the overall well-being of prisoners, and the implication this has on the safety of the prison system at large. 
+
+## Overview of Relevant Literature
+Incarceration rates in the United States have been gradually increasing in recent years, and data shows that these rates have nearly tripled since the 1980s [@dahl]. These troubling trends raise several questions regarding the efficacy of the current rehabilitation practices as well as the prison system's ability to successfully reintegrate inmates back into society. Rehabilitative incarceration has been proven to offer a number of benefits through services such as properly funded educational initiatives, drug and mental health treatment, and job training programs [@dahl]. 
+
+Countries such as Norway and other Western European nations have shown high levels of success in their use of rehabilitative practices to help integrate prisoners back into society, which has led to an extremely low and stable rate of incarceration over the past few decades when compared to the rates seen in the United States [@dahl]. There are several notable differences at play between American prison systems and those seen in many European countries, which likely play a role in these varying rates of incarceration. Norwegian prisons, for example, offer numerous accessible social support services to inmates and place a great deal of emphasis on rehabilitation rather than punishment, which in turn leads to significantly lower recidivism rates when compared to American prisons [@dahl]. 
+
+Another major flaw specific to the United States prison population is the increase in rates of violence seen in recent decades [@berg]. In many instances, variables such as race and gender have been cited as potential risk factors for rise in prison violence [@berg]. Minority individuals are significantly impacted by mass incarceration [@bell]. It is important to examine the demographics of prison violence from an intersectional approach to understand how societal factors contribute to these rates of violence and victimization in prisons, and in turn, affect the overall safety of the prison system [@bell]. 
+
+
+
+# Data
+
+The original paper utilizes several distinct datasets. Figure \@ref(fig:counts) is replicated from the original paper; it showcases at a high level the evolution of incarceration in the US since 1920. 
+
+```{r counts,  height=7, width=4, fig.cap="US Incarceration, 1925-2018", echo=FALSE, warning=FALSE}
+# Imprisonment and incarceration times series
+x0 <- data.table(read_excel("../../inputs/data/mass incarceration.xlsx", sheet=1))
+
+par(mfrow=c(1,1))
+plot(x0$Year, x0$`Prison Rate per 100k`, type="l", col="blue",
+     xlim=c(1920, 2020), ylim=c(0, 800),
+     xlab="", ylab="Incarceration Rate (per 100,000)", lty=1, lwd=2)
+title("US Incarceration, 1925-2018")
+lines(x0$Year, x0$TotalRate, lty=2, col="red", lwd=2)
+legend(1925, 770, c("Prison and jail","Prison only"), lwd=2,
+       lty=c(2,1), col=c("red","blue"), bty="n")
+abline(h=seq(0, 800, 200), v=seq(1920,2020,20), lty=3, col="gray")
+```
+
+## Source
+This paper reproduces and investigates several areas of the original paper, utilizing the same datasets in the process. Note that the paper does not analyze one single dataset; data is instead pulled from many sources, most of which are publicly accessible. The author has then collated this into separate files depending on categorisation and how they appear in the paper. The sources are as follows: 
+
+- U.S. imprisonment: : Sourcebook of Criminal Justice Statistics Online (University of Albany, 2012), Table 6.28.2012. 
+- Bureau of Justice Statistics report from Ann Carson (2020), Prisoners in 2019 (NCJ 255115).
+- Annual jail counts from Zhen Zeng (2020), Jail Inmates in 2018 (NCJ 253044) 
+U.S. population from FRED, Federal Reserve Bank of St. Louis (U.S. Bureau of Economic Analysis, 2021). 
+- U.S. population from Institute for Criminal Policy Research (2021). 
+- Cumulative risk figures  from Western and Pettit (2010), Incarceration & social inequality. Daedalus, 139(3), pp. 8-19. 
+- Self-reported program participation from the Surveys of Inmates of State - Correctional Facilities (1986, 1991, 1997, 2004) - see Bureau of Justice Statistics (1994, 2004a, 2004b, 2006, 2019). 
+- Prison homicide from the BJS publication by E. Ann Carson, Mary P. Cowhig (2020), Mortality in State And Federal Prisons, 2001-2016 Statistical Tables (NCJ 251920). 
+- General population data on firearm and non-firearm homicide victimization from the National Center for Health Statistics (NCHS, 2021) at the Centers for Disease Control and Prevention (CDC).
+- National time series and state-level COVID-19 case rates in prison from the Covid Prison Project by Lauren Brinkely-Rubinstein (UNC Chapel Hill) and Kathryn Nowotny (University of Miami). 
+- COVID-19 case rates for each state from The Covid Tracking Project 
+State population data from U.S. Census Bureau estimates for 2020 
+
+
+## Methodology
+`R` [@citeR] was the language and environment used for the bulk of this analysis, alongside the `tidyverse` [@tidyverse], `dplyr` [@dplyr], `kableExtra` [@kableExtra], `reshape2` [@reshape2], and `data table` [@citeDT] packages.
+
+Collection methods vary heavily across the sources, from automated quantitative data on inmate counts to self-participating surveys. The author has produced the following intermediate datasets based on their own manipulation, of which we have classified as being either 1) strictly prison-related, or 2) incorporating recent COVID data.
+
+### Prison-related
+
+`mass-incarceration.xlsx`
+
+- Sheet 1 contains time series data for incarceration from 1925-2019; each year is associated with the number of imprisoned individuals per 100k people, calculated from the total population and total number of inmates
+- Sheet 2 contains incarceration rates from 15 western countries, used to provide global context to US rates
+- Sheet 3 contains incarceration risk figures for each combination of the following factors: race (W/B), education (all, <college, <high school), and age cohort (born in 1945-1949, or 1975-1979)
+
+In general, the data in this file is quantitative and objective - there should be little confusion about the number of people imprisoned in a country, for example. However, there are likely data integrity issues with the decades preceding computer systems, particularly surrounding an area of society that has been historically overlooked. 
+
+`spi86to16.dta`
+
+- This survey of prisoners contains data for each respondent, who are associated with a region, year of response, and binary flags for their participation in drug programs, education programs, job training, and work assignments
+
+The self-reported nature of this survey data is a key drawback, as non-respondents are simply not accounted for. While the remaining responses are still valuable for this study, self-selection bias can inflate participation rates. 
+
+`msfp0116stt02data.csv, msfp0116stt09data.csv (Mortality in State and Federal Prisons)`
+
+- The former provides counts for conditions like cancer or liver disease for the years 2001, 2006-2016
+- The latter provides counts for the same conditions but segmented by demographic factors instead of time, such as gender, race, and age
+
+While these datasets should theoretically be objective, health outcomes can easily be misdiagnosed or unreported - especially in the prison environment. Certain conditions may therefore be over- or under-represented, providing warning against reading into the specific counts too closely. 
+
+There are several other supplementary datasets that provide contextual information like state population, but are not critical to the core analysis of the paper. We have omitted an in-depth examination of these datasets for brevity.
+
+### COVID-related
+Two main sources for COVID-19 data were utilized in the original paper: The COVID Prison Project [@CPP] and COVID Tracking Project [@CTP]. 
+
+The COVID Prison Project (CPP) retains national-level and state-level time series data of COVID-19 cases in US prisons/correctional facilities up from March 2020 to March 2021 among those incarcerated and staff. It is a public-facing database created by a group of interdisciplinary, public health scientists led by Lauren Brinkley-Rubinstein, PhD. CPP collected related public data and policies through Department of Corrections (DOC) websites, Facebook pages, Twitter forums, media press, Immigration & Customs Enforcement (ICE) and the Federal Bureau of Prisons (BOP). All US jurisdictions communicate their COVID-specific operational policies via their DOC websites while only 53.70% of jurisdictions utilize social media platforms such as Facebook and Twitter. Grading all jurisdictions by the availability and frequency of reporting, Idaho had the best transparency when communicating actively on COVID-related operations/policy changes while Nevada, Nebraska and West Virginia being the least transparent. The collective DOC social media following is by the end of 2020 is as follows: 1,094,970 million on Facebook, 623,008 on Twitter, 123,579 on Instagram, and 36,826 on YouTube. Through CPP, the two following two datasets were extracted: `covidts01.csv` and `COVID-19 Cases in State and Federal Prison Systems.csv`.
+
+`covidts01.csv` contains the collective number of new cases and case rates per 100,000 among the incarcerated, prison staff, and the general population. The numbers are recorded on a daily basis from April 22, 2020 to the end of August 2020. Upon reviewing Figure 3, `covidts01.csv` is the sole dataset used and only the case rates are used as they are scaled for comparison. As we can see in the following summary table, the incarcerated are the most transmissive, followed by the prison staff and then the general population.
+
+\newpage
+
+# Results
+
+We elected to explore 3 areas of mass incarceration further: violence, rehabilitation programs, and crisis preparedness in the COVID context.
+
+```{r, warning=FALSE, echo=FALSE, message=FALSE, include=FALSE, results='hide'}
+## state and federal prison deaths
+deaths1 <- read.csv("../../inputs/data/msfp0116stt02data.csv", row.names=1, header=T)
+deaths1 <- deaths1[,c("X2012","X2013","X2014","X2015","X2016")]
+homicides_total <- sum(deaths1["Homicide",])
+
+## state and federal prison populations
+pops <- read.csv("../../inputs/data/msfp0116stat01data.csv", row.names=1, header=T)
+pops <- pops[,c("X2012","X2013","X2014","X2015","X2016")]
+pop_rows_age <- apply(pops[c("17 or younger","18-24","25-34","35-44","45-54","55 or older"),],
+                 1, sum)
+popage <- pop_rows_age/sum(pop_rows_age)
+pop_rows_race <- apply(pops[c( "white", "black", "Hispanic", "other"),],
+                 1, sum)
+poprace <- pop_rows_race/sum(pop_rows_race)
+total_pops <- pops[1,]
+
+## total state prison deaths by demographics 
+demodeaths <- read.csv("../../inputs/data/msfp0116stt09data.csv", row.names=1, header=T)
+
+## proportion of deaths by age, race, sex
+prop_deaths_age <- demodeaths[8:13,11]/demodeaths[1,11]  
+prop_deaths_race <- demodeaths[4:7,11]/demodeaths[1,11]
+prop_deaths_sex <- demodeaths[2,11]/demodeaths[1,11]  
+prop_inmates_sex <- sum(pops[2,])/sum(pops[2:3,])     
+
+## total prison homicides, men, by age and race 2012-2016 (state prison age-sex distribution)
+hommicide_age <- homicides_total * prop_deaths_age * prop_deaths_sex
+hommicide_race <- homicides_total * prop_deaths_race * prop_deaths_sex
+
+## male prison population by age and race (2012-2016)
+male_age <- sum(total_pops) * prop_inmates_sex * popage
+male_race <- sum(total_pops) * prop_inmates_sex * poprace
+
+## male age-specific and race-specific homicide rates 
+  # age-specific men's homicide rate
+hommicide_rate_age <- 1e5 * hommicide_age/male_age  
+  # race-specific men's homicide rate
+hommicide_rate_race <- 1e5 * hommicide_race/male_race 
+  # age-adjusted homicide rate
+totalpris_age <- sum(hommicide_rate_age * popage)
+  # race-adjusted homicide rate
+totalpris_race <- sum(hommicide_rate_race * poprace) 
+
+## Demographic weights for age-race adjustment of CDC homicide rates
+## Race distribution at age category
+wt <- apply(pops[-1,],1,sum)/sum(pops[2:3,])
+racewt <- c(wt["black"],wt["white"]+wt["other"],wt["Hispanic"])
+
+## Age-specific homicide rates in the population, firearm and nonfirearm
+
+x0 <- read.table("../../inputs/data/Underlying Cause of Death, 1999-2019 homicide.txt",
+                 sep="\t",nrows=1383,header=T)
+x0 <- x0[x0$Ten.Year.Age.Groups.Code != "", ]
+black <- x0$Race=="Black or African American" & x0$Hispanic.Origin=="Not Hispanic or Latino"
+white <- (x0$Race=="White" | x0$Race=="American Indian or Alaska Native" |
+            x0$Race=="Asian or Pacific Islander") &  x0$Hispanic.Origin=="Not Hispanic or Latino"
+hispanic <- x0$Hispanic.Origin == "Hispanic or Latino"
+x0$race <- ifelse(black, 0, NA)
+x0$race[white] <- 1
+x0$race[hispanic] <- 2
+x0$Deaths <- as.numeric(x0$Deaths)
+x0$Population <- as.numeric(x0$Population)
+
+## age-specific homicide rate, by race
+xm0 <- x0[x0$Year.Code==2016 & x0$Gender=="Male",]
+xm0 <- xm0[!is.na(xm0$Deaths + xm0$Population),]
+
+xm0 <- aggregate(xm0[c("Deaths","Population")],
+                  by=list(xm0$race, xm0$Ten.Year.Age.Groups.Code), sum)
+xm0[xm0$Group.2=="15-24", c("Deaths","Population")] <-
+    xm0[xm0$Group.2=="15-24", c("Deaths","Population")] * .7
+temp <- xm0[xm0$Group.2=="55-64"|xm0$Group.2=="65-74"|xm0$Group.2==" 75-84"|xm0$Group.2=="85+",]
+temp <- aggregate(temp[,c("Deaths","Population")], by=list(temp$Group.1), sum)
+xm0 <- xm0[xm0$Group.2!="65-74" & xm0$Group.2!="75-84" & xm0$Group.2!="85+", ]
+xm0[xm0$Group.1=="55-64",] <- temp
+xm0$Group.2[xm0$Group.2=="55-64"] <- "55+"
+xm0$Group.2[xm0$Group.2=="15-24"] <- "18-24"
+
+xm0$wt <- rep(racewt,5)
+deathrt <- 1e5*xm0$Deaths/xm0$Population
+wdeathrt <- deathrt * xm0$wt
+
+#race-adjusted homicide rates
+cdchomrt <- aggregate(wdeathrt, by=list(xm0$Group.2), sum)
+cdchomrttot <- sum(cdchomrt$x * wt[c("18-24","25-34","35-44","45-54","55 or older")])
+
+x1 <- read.table("../../inputs/data/Underlying Cause of Death, 1999-2019 homicide gun.txt",
+                 sep="\t",nrows=1291,header=T)
+x1 <- x1[x1$Ten.Year.Age.Groups.Code != "", ]
+black <- x1$Race=="Black or African American" & x1$Hispanic.Origin=="Not Hispanic or Latino"
+white <- (x1$Race=="White" | x1$Race=="American Indian or Alaska Native" |
+          x1$Race=="Asian or Pacific Islander") &  x1$Hispanic.Origin=="Not Hispanic or Latino"
+hispanic <- x1$Hispanic.Origin == "Hispanic or Latino"
+x1$race <- ifelse(black, 0, NA)
+x1$race[white] <- 1
+x1$race[hispanic] <- 2
+x1$Deaths <- as.numeric(x1$Deaths)
+x1$Population <- as.numeric(x1$Population)
+
+## age-specific homicide rate, by race
+xm1 <- x1[x1$Year.Code==2016 & x1$Gender=="Male",]
+xm1 <- xm1[!is.na(xm1$Deaths + xm1$Population),]
+
+xm1 <- aggregate(xm1[c("Deaths","Population")],
+                  by=list(xm1$race, xm1$Ten.Year.Age.Groups.Code), sum)
+xm1[xm1$Group.2=="15-24", c("Deaths","Population")] <-
+    xm1[xm1$Group.2=="15-24", c("Deaths","Population")] * .7
+temp <- xm1[xm1$Group.2=="55-64"|xm1$Group.2=="65-74"|xm1$Group.2==" 75-84"|xm1$Group.2=="85+",]
+temp <- aggregate(temp[,c("Deaths","Population")], by=list(temp$Group.1), sum)
+xm1 <- xm1[xm1$Group.2!="65-74" & xm1$Group.2!="75-84" & xm1$Group.2!="85+", ]
+xm1[xm1$Group.1=="55-64",] <- temp
+xm1$Group.2[xm1$Group.2=="55-64"] <- "55+"
+xm1$Group.2[xm1$Group.2=="15-24"] <- "18-24"
+
+## Non-firearm homicides
+xm0$nfdeaths <- xm0$Deaths - xm1$Deaths
+nfdeathrt <- 1e5*xm0$nfdeaths/xm0$Population
+wnfdeathrt <- nfdeathrt * xm0$wt
+
+#race-adjusted homicide rate
+cdcnfhomrt <- aggregate(wnfdeathrt, by=list(xm0$Group.2), sum)
+cdcnfhomrttot <- sum(cdcnfhomrt$x * wt[c("18-24","25-34","35-44","45-54","55 or older")])
+
+tab0 <- cbind(c(totalpris_age, hommicide_rate_age[-1]),
+              c(cdchomrttot, cdchomrt$x),
+              c(cdcnfhomrttot, cdcnfhomrt$x))
+dimnames(tab0)[[1]][1] <- "All"
+dimnames(tab0)[[2]] <- c("Prison","Pop.","Non-Gun Pop.")
+
+library(haven)
+spi<- read_dta("../../inputs/data/spi_violence.dta")
+
+spi$coaslt<- 0
+spi$coaslt[spi$V1404>=1 & spi$V1404<=60]<- 1
+
+spi$inaslt<- 0
+spi$inaslt[spi$V1406>=1 & spi$V1406<=240]<- 1
+
+spi$aslt<- 0
+spi$aslt[spi$coaslt==1 | spi$inaslt==1]<- 1
+
+spi$agecat<- spi$RV0002
+spi$agecat[spi$RV0002==6]<- 5
+
+spi$race<- NA
+spi$race[spi$RV0003B==1 | spi$RV0003B==4 | spi$RV0003B==5]<- 1
+spi$race[spi$RV0003B==2]<- 2
+spi$race[spi$RV0003B==3]<- 3
+spi$race[spi$RV0003B==NA]<- 9
+
+spi$sex<- spi$RV0005
+spi$wt<- spi$V1585
+
+library("GDAtools")
+
+keep_spi<- spi[spi$sex==1 & spi$race<9,]
+y<- wtable(keep_spi$race, keep_spi$agecat, w=keep_spi$wt)
+cbind((y[1, -6]/y[4, -6])*100, (y[2, -6]/y[4, -6])*100, (y[3, -6]/y[4, -6])*100)
+
+y1<- wtable(spi$agecat, spi$sex, w=spi$wt)
+spi0<- cbind((y1[-6,1]/y1[6,1])*100, (y1[-6,2]/y1[6,2])*100)
+
+agem <- spi0[,1]
+agef <- spi0[,2]
+
+y1a<- xtabs(wt ~ agecat + sex + aslt, data=spi)
+y1a
+a<- y1a[,,2][,1]/(y1a[,,1][,1]+y1a[,,2][,1])
+b<- y1a[,,2][,2]/(y1a[,,1][,2]+y1a[,,2][,2])
+c<- rowSums(y1a[,,2])/(rowSums(y1a[,,1])+rowSums(y1a[,,2]))
+d<- 1:5
+spi1 <- cbind(d, a,b,c)
+
+dimnames(spi1) <- list(c("18-24","25-34","35-44","45-54","55 and over"),
+                       c("Age Group","Men","Women","Total"))
+total <- c(sum(spi1[,2]*agem/100), sum(spi1[,3]*agef/100))
+spiar <- 1000*rbind(total, spi1[,2:3])
+# spiar[,1]
+
+library(kableExtra)
+table1 <- round(cbind(tab0, spiar[,1]), 1)
+dimnames(table1) <- list(dimnames(table1)[[1]],
+                         c("Deaths In Prison","Total Deaths in the Population", "Non-firearm Deaths in the Population",
+                           "Assaults in Prison"))
+
+deaths1 <- read.csv("../../inputs/data/msfp0116stt02data.csv", row.names=1, header=T)
+deaths1 <- deaths1[,c("X2012","X2013","X2014","X2015","X2016")]
+homicides_total <- sum(deaths1["Homicide",])
+
+## state and federal prison populations
+pops <- read.csv("../../inputs/data/msfp0116stat01data.csv", row.names=1, header=T)
+pops <- pops[,c("X2012","X2013","X2014","X2015","X2016")]
+pop_rows_age <- apply(pops[c("17 or younger","18-24","25-34","35-44","45-54","55 or older"),],
+                 1, sum)
+popage <- pop_rows_age/sum(pop_rows_age)
+pop_rows_race <- apply(pops[c( "white", "black", "Hispanic", "other"),],
+                 1, sum)
+poprace <- pop_rows_race/sum(pop_rows_race)
+total_pops <- pops[1,]
+
+## total state prison deaths by demographics 
+demodeaths <- read.csv("../../inputs/data/msfp0116stt09data.csv", row.names=1, header=T)
+
+## proportion of deaths by age, race, sex
+prop_deaths_age <- demodeaths[8:13,11]/demodeaths[1,11]  
+prop_deaths_race <- demodeaths[4:7,11]/demodeaths[1,11]
+prop_deaths_sex <- demodeaths[2,11]/demodeaths[1,11]  
+prop_inmates_sex <- sum(pops[2,])/sum(pops[2:3,])     
+
+## total prison homicides, men, by age and race 2012-2016 (state prison age-sex distribution)
+hommicide_age <- homicides_total * prop_deaths_age * prop_deaths_sex
+hommicide_race <- homicides_total * prop_deaths_race * prop_deaths_sex
+
+## male prison population by age and race (2012-2016)
+male_age <- sum(total_pops) * prop_inmates_sex * popage
+male_race <- sum(total_pops) * prop_inmates_sex * poprace
+
+## male age-specific and race-specific homicide rates 
+  # age-specific men's homicide rate
+hommicide_rate_age <- 1e5 * hommicide_age/male_age  
+  # race-specific men's homicide rate
+hommicide_rate_race <- 1e5 * hommicide_race/male_race 
+  # age-adjusted homicide rate
+totalpris_age <- sum(hommicide_rate_age * popage)
+  # race-adjusted homicide rate
+totalpris_race <- sum(hommicide_rate_race * poprace) 
+
+## Demographic weights for age-race adjustment of CDC homicide rates
+## Race distribution at age category
+wt <- apply(pops[-1,],1,sum)/sum(pops[2:3,])
+racewt <- c(wt["black"],wt["white"]+wt["other"],wt["Hispanic"])
+
+## Age-specific homicide rates in the population, firearm and nonfirearm
+
+x0 <- read.table("../../inputs/data/Underlying Cause of Death, 1999-2019 homicide.txt",
+                 sep="\t",nrows=1383,header=T)
+x0 <- x0[x0$Ten.Year.Age.Groups.Code != "", ]
+black <- x0$Race=="Black or African American" & x0$Hispanic.Origin=="Not Hispanic or Latino"
+white <- (x0$Race=="White" | x0$Race=="American Indian or Alaska Native" |
+            x0$Race=="Asian or Pacific Islander") &  x0$Hispanic.Origin=="Not Hispanic or Latino"
+hispanic <- x0$Hispanic.Origin == "Hispanic or Latino"
+x0$race <- ifelse(black, 0, NA)
+x0$race[white] <- 1
+x0$race[hispanic] <- 2
+x0$Deaths <- as.numeric(x0$Deaths)
+x0$Population <- as.numeric(x0$Population)
+
+## age-specific homicide rate, by race
+xm0 <- x0[x0$Year.Code==2016 & x0$Gender=="Male",]
+xm0 <- xm0[!is.na(xm0$Deaths + xm0$Population),]
+
+xm0 <- aggregate(xm0[c("Deaths","Population")],
+                  by=list(xm0$race, xm0$Ten.Year.Age.Groups.Code), sum)
+xm0[xm0$Group.2=="15-24", c("Deaths","Population")] <-
+    xm0[xm0$Group.2=="15-24", c("Deaths","Population")] * .7
+temp <- xm0[xm0$Group.2=="55-64"|xm0$Group.2=="65-74"|xm0$Group.2==" 75-84"|xm0$Group.2=="85+",]
+temp <- aggregate(temp[,c("Deaths","Population")], by=list(temp$Group.1), sum)
+xm0 <- xm0[xm0$Group.2!="65-74" & xm0$Group.2!="75-84" & xm0$Group.2!="85+", ]
+xm0[xm0$Group.1=="55-64",] <- temp
+xm0$Group.2[xm0$Group.2=="55-64"] <- "55+"
+xm0$Group.2[xm0$Group.2=="15-24"] <- "18-24"
+
+xm0$wt <- rep(racewt,5)
+deathrt <- 1e5*xm0$Deaths/xm0$Population
+wdeathrt <- deathrt * xm0$wt
+
+cdchomrt <- aggregate(wdeathrt, by=list(xm0$Group.1), sum)
+cdchomrttot <- sum(cdchomrt$x * wt[c("black","white","Hispanic")])
+
+x1 <- read.table("../../inputs/data/Underlying Cause of Death, 1999-2019 homicide gun.txt",
+                 sep="\t",nrows=1291,header=T)
+x1 <- x1[x1$Ten.Year.Age.Groups.Code != "", ]
+black <- x1$Race=="Black or African American" & x1$Hispanic.Origin=="Not Hispanic or Latino"
+white <- (x1$Race=="White" | x1$Race=="American Indian or Alaska Native" |
+            x1$Race=="Asian or Pacific Islander") &  x1$Hispanic.Origin=="Not Hispanic or Latino"
+hispanic <- x1$Hispanic.Origin == "Hispanic or Latino"
+x1$race <- ifelse(black, 0, NA)
+x1$race[white] <- 1
+x1$race[hispanic] <- 2
+x1$Deaths <- as.numeric(x1$Deaths)
+x1$Population <- as.numeric(x1$Population)
+
+## age-specific homicide rate, by race
+xm1 <- x1[x1$Year.Code==2016 & x1$Gender=="Male",]
+xm1 <- xm1[!is.na(xm1$Deaths + xm1$Population),]
+
+xm1 <- aggregate(xm1[c("Deaths","Population")],
+                 by=list(xm1$race, xm1$Ten.Year.Age.Groups.Code), sum)
+xm1[xm1$Group.2=="15-24", c("Deaths","Population")] <-
+  xm1[xm1$Group.2=="15-24", c("Deaths","Population")] * .7
+temp <- xm1[xm1$Group.2=="55-64"|xm1$Group.2=="65-74"|xm1$Group.2==" 75-84"|xm1$Group.2=="85+",]
+temp <- aggregate(temp[,c("Deaths","Population")], by=list(temp$Group.1), sum)
+xm1 <- xm1[xm1$Group.2!="65-74" & xm1$Group.2!="75-84" & xm1$Group.2!="85+", ]
+xm1[xm1$Group.1=="55-64",] <- temp
+xm1$Group.2[xm1$Group.2=="55-64"] <- "55+"
+xm1$Group.2[xm1$Group.2=="15-24"] <- "18-24"
+
+## Non-firearm homicides
+xm0$nfdeaths <- xm0$Deaths - xm1$Deaths
+nfdeathrt <- 1e5*xm0$nfdeaths/xm0$Population
+wnfdeathrt <- nfdeathrt * xm0$wt
+
+#race-adjusted homicide rate
+cdcnfhomrt <- aggregate(wnfdeathrt, by=list(xm0$Group.1), sum)
+cdcnfhomrttot <- sum(cdcnfhomrt$x * wt[c("black","white","Hispanic")])
+
+tab0 <- cbind(c(totalpris_race, hommicide_rate_race[-4]),
+              c(cdchomrttot, cdchomrt$x),
+              c(cdcnfhomrttot, cdcnfhomrt$x))
+dimnames(tab0)[[1]][1] <- "All"
+dimnames(tab0)[[1]][2:4] <- c("Black", "White", "Hispanic")
+dimnames(tab0)[[2]] <- c("Prison","Pop.","Non-Gun Pop.")
+
+library(haven)
+spi<- read_dta("../../inputs/data/spi_violence.dta")
+
+spi$coaslt<- 0
+spi$coaslt[spi$V1404>=1 & spi$V1404<=60]<- 1
+
+spi$inaslt<- 0
+spi$inaslt[spi$V1406>=1 & spi$V1406<=240]<- 1
+
+spi$aslt<- 0
+spi$aslt[spi$coaslt==1 | spi$inaslt==1]<- 1
+
+spi$agecat<- spi$RV0002
+spi$agecat[spi$RV0002==6]<- 5
+
+# race code: white/other, NH black, Hispanic
+spi$race<- NA
+spi$race[spi$RV0003B==1 | spi$RV0003B==4 | spi$RV0003B==5]<- 1
+spi$race[spi$RV0003B==2]<- 0
+spi$race[spi$RV0003B==3]<- 2
+
+spi$sex<- spi$RV0005
+spi$wt<- spi$V1585
+
+# tab agecat race [aweight=wt] if sex==1 & RV0003B<9, r nof
+# keep_spi<- spi[spi$sex==1 & spi$race<9,]
+# y<- GDAtools::wtable(keep_spi$race, keep_spi$agecat, w = keep_spi$wt)
+# race<- cbind(y[1,-4]/y[4,-4]*100, y[2,-4]/y[4,-4]*100, y[3,-4]/y[4,-4]*100)
+
+# tab race sex [aweight=wt], col nof
+
+y1<- GDAtools::wtable(spi$race, spi$sex, w = spi$wt)
+spi0<- cbind(y1[-4,1]/y1[4,1]*100, y1[-4,2]/y1[4,2]*100)
+
+agem <- spi0[,1]
+agef <- spi0[,2]
+
+## Respondents written up for assault by age and sex in last 12 months
+##. tab agecat sex [aweight=wt], sum(aslt) mean (NB cells are proportions)
+
+y1a<- xtabs(wt ~ race + sex + aslt, data=spi) 
+y1a
+a<- y1a[,,2][,1]/(y1a[,,1][,1]+y1a[,,2][,1])
+b<- y1a[,,2][,2]/(y1a[,,1][,2]+y1a[,,2][,2])
+c<- rowSums(y1a[,,2])/(rowSums(y1a[,,1])+rowSums(y1a[,,2]))
+d<- 0:2
+spi1 <- cbind(d, a,b,c)
+
+dimnames(spi1) <- list(c("Black", "White", "Hispanic"),
+                       c("Race","Men","Women","Total"))
+total <- c(sum(spi1[,2]*agem/100), sum(spi1[,3]*agef/100))
+spiar <- 1000*rbind(total, spi1[,2:3])
+```
+
+
+```{r, warning=FALSE, echo=FALSE, message=FALSE, results='hide'}
+table2 <- round(cbind(tab0, spiar[,1]), 1)
+dimnames(table2) <- list(dimnames(table2)[[1]],
+                         c("Deaths In Prison","Total Deaths in the Population", "Non-firearm Deaths in the Population",
+                           "Assaults in Prison"))
+
+table2 <- data.frame(table2)
+table1 <- data.frame(table1)
+tablefinal <- rbind(table1,table2)
+tablefinal[c(2, 3, 4, 5, 6, 1, 8, 9, 10, 7),]
+
+
+rownames(tablefinal) <- c("All Ages", "18-24", "25-34", "35-44", "45-54", "55 or older", "All Races", "Black", "White", "Hispanic")
+
+
+dimnames(tablefinal) <- list(dimnames(tablefinal)[[1]],
+                         c("Deaths In Prison","Total Deaths in the Population", "Non-firearm Deaths in the Population",
+                           "Assaults in Prison"))
+```
+
+
+```{r, warning=FALSE, echo=FALSE, message=FALSE}
+kbl(tablefinal, booktabs=T, caption = "Violence and Homicide Victimization") %>% 
+  kable_classic_2(font_size=10, full_width = F, html_font = "Cambria") %>%
+  column_spec(1, width = "3cm") %>%
+  column_spec(2, width = "3cm") %>%
+  column_spec(3, width = "3cm") %>%
+  column_spec(4, width = "3cm") %>%
+  column_spec(5, width = "2cm") %>%
+  row_spec(0, bold=T) %>%
+  add_header_above(c(" " = 1, "Homicide Victimization Rate" = 3, " " = 1), bold=T) %>%
+  pack_rows("Age", 1, 6) %>%
+  pack_rows("Race", 7, 10) %>%
+  kable_styling(latex_options = "HOLD_position")
+```
+
+Table 1 compares age and race-specific homicide victimization rates of men in prison to population-wide homicide victimization rates. In order to conduct a more accurate analysis, we adjusted the homicide rates in the population by race to align with the proportion of the racial composition in prison to account for the fact that there is typically a much higher incarceration rate among black and hispanic individuals.
+
+By observing the results in Table 1, we can see that there is a significantly lower rate of homicide victimization in prison for men under 35 when compared to the rate for men in the general population of the same age category. In addition, the prison victimization rate drastically increases for prisoners over 45 as well as for prisoners over 55, which is in direct opposition to the rate observed in the population. We can also see that the victimization rate is actually slightly higher for individuals in the oldest (55+) age category in prisons compared to those in the general population. To take a closer look into the reasoning behind this, we can observe how the homicide victimization rate in prison compares to the victimization rate in the population with regards to non-firearm homicides. This analysis will likely provide us with a more standardized comparative analysis due to the fact that there are no firearms in prison, and lethal gun violence in prison is almost non-existent because of this. We can see that the rate of non-firearm deaths in the population is actually much lower than the death rate in prison for every age category. Finally, we can observe the assault rate in prison, which shows that rates of assault substantially decline as the average age of prisoners increases, indicating that violence is the most prevalent in the youngest demographic. These results are consistent with the author's findings. 
+
+Although the author's analysis provides useful insight into the breakdown of homicide victimization on the basis of age, it disregards how these findings might differ in the context of other relevant variables, such as race. This raises an interesting point to consider with respect to how the homicide victimization rate might differ on the basis of race after already adjusting for the proportion of racial composition in prisons. Analysis of race-age-adjusted values can allow us to compare homicide victimization statistics by race in prisons as well as in the general population. Table 1 shows that the homicide victimization rate in prison is substantially higher for black prisoners when compared to their white and Hispanic counterparts, even after accounting for and adjusting for the greater incidence of black inmates in the prison population. Interestingly, the rates of homicide victimization for white and Hispanic individuals are higher in prison compared to non-firearm homicide in the population, whereas the victimization risk for black people actually goes down in prison compared to in the general population. 
+
+```{r rehab-part, fig.cap="Enrollment in Drug, Education, Job Training Programs, and Work Assignment, State Prisoners, by Region", warning=FALSE, echo=FALSE, message=FALSE}
+x <- read_dta('../../inputs/data/spi86to16.dta')
+x <- x[x$admit==1,]
+
+drugev  <- data.matrix(x %>% group_by(region, year) %>% summarize(weighted.mean(drugev, wt, na.rm=T)))
+drugev  <- drugev[!is.nan(drugev[,3]),]
+vocev   <- data.matrix(x %>% group_by(region, year) %>% summarize(weighted.mean(vocev, wt, na.rm=T)))
+vocev   <- data.matrix(vocev[!is.nan(vocev[,3]),])
+work    <- data.matrix(x %>% group_by(region, year) %>% summarize(weighted.mean(work, wt, na.rm=T)))
+work    <- data.matrix(work[!is.nan(work[,3]),])
+edev    <- data.matrix(x %>% group_by(region, year) %>% summarize(weighted.mean(edev, wt, na.rm=T)))
+edev    <- data.matrix(edev[!is.nan(edev[,3]),])
+
+dimnames(drugev) <- dimnames(vocev) <- dimnames(work) <- dimnames(edev) <-
+    list(NULL, c("region","year","xbar"))
+
+
+# Creating the figure
+par(mfrow=c(1,4))
+par(fig=c(0,.29, 0,1))
+plot(drugev[drugev[,"region"]==1,"year"],
+     drugev[drugev[,"region"]==1,"xbar"]*100,
+     type="b", pch=16, main="Drug Program",
+     xlim=c(1986, 2016), ylim=c(0,80), col="skyblue2",
+     axes=F, ylab="Percent", xlab="")
+axis(1)
+axis(2)
+lines(drugev[drugev[,"region"]==2,"year"], drugev[drugev[,"region"]==2,"xbar"]*100,
+      type="b", pch=17, col="dodgerblue")
+
+lines(drugev[drugev[,"region"]==3,"year"], drugev[drugev[,"region"]==3,"xbar"]*100,
+      type="b", pch=18, col="red")
+
+lines(drugev[drugev[,"region"]==4,"year"], drugev[drugev[,"region"]==4,"xbar"]*100,
+      type="b", pch=19, col="blue")
+
+legend(1986, 80, c("Northeast","Midwest","South","West"),
+       pch=16:19, col=c("skyblue2", "dodgerblue", "red","blue"),
+       lty=1, bty="n", cex=1.1)
+abline(v=seq(1985, 2015, 10), h=seq(0,80, 20), col="gray",lty=3)
+par(new=T)
+par(fig=c(.237,.527, 0,1))
+plot(edev[edev[,"region"]==1,"year"],
+     edev[edev[,"region"]==1,"xbar"]*100, type="b", pch=16, main="Education",
+     xlim=c(1986, 2016), ylim=c(0,80), col="skyblue2",
+     axes=F, ylab="", xlab="")
+axis(1)
+lines(edev[edev[,"region"]==2,"year"], edev[edev[,"region"]==2,"xbar"]*100, type="b", pch=17, col="dodgerblue")
+lines(edev[edev[,"region"]==3,"year"], edev[edev[,"region"]==3,"xbar"]*100, type="b", pch=18, col="red")
+lines(edev[edev[,"region"]==4,"year"], edev[edev[,"region"]==4,"xbar"]*100, type="b", pch=19, col="blue")
+abline(v=seq(1985, 2015, 10), h=seq(0,80, 20), col="gray",lty=3)
+par(new=T)
+par(fig=c(.473,.763, 0,1))
+plot(vocev[vocev[,"region"]==1,"year"],
+     vocev[vocev[,"region"]==1,"xbar"]*100, type="b", pch=16, main="Job Training",
+     xlim=c(1986, 2016), ylim=c(0,80), col="skyblue2",
+     axes=F, ylab="", xlab="")
+axis(1)
+lines(vocev[vocev[,"region"]==2,"year"], vocev[vocev[,"region"]==2,"xbar"]*100, type="b", pch=17, col="dodgerblue")
+lines(vocev[vocev[,"region"]==3,"year"], vocev[vocev[,"region"]==3,"xbar"]*100, type="b", pch=18, col="red")
+lines(vocev[vocev[,"region"]==4,"year"], vocev[vocev[,"region"]==4,"xbar"]*100, type="b", pch=19, col="blue")
+abline(v=seq(1985, 2015, 10), h=seq(0,80, 20), col="gray",lty=3)
+par(new=T)
+par(fig=c(.71,1.0, 0,1))
+plot(work[work[,"region"]==1,"year"],
+     work[work[,"region"]==1,"xbar"]*100, type="b", pch=16, main="Work",
+     xlim=c(1986, 2016), ylim=c(0,80), col="skyblue2",
+     axes=F, ylab="", xlab="")
+axis(1)
+lines(work[work[,"region"]==2,"year"], work[work[,"region"]==2,"xbar"]*100, type="b", pch=17, col="dodgerblue")
+lines(work[work[,"region"]==3,"year"], work[work[,"region"]==3,"xbar"]*100, type="b", pch=18, col="red")
+lines(work[work[,"region"]==4,"year"], work[work[,"region"]==4,"xbar"]*100, type="b", pch=19, col="blue")
+abline(v=seq(1985, 2015, 10), h=seq(0,80, 20), col="gray",lty=3)
+
+```
+
+
+```{r rehab-part-new, fig.cap="Percentage Change in Enrollment in Rehabilitation Programs", echo=FALSE, warning=FALSE, message=FALSE}
+fig2_df <- read_dta('../../inputs/data/spi86to16.dta')
+
+df <- data.table(fig2_df)
+
+# plotting as percentage change instead of absolute figures
+# creating separate matrices for each rehabilitation
+x <- df[admit==1]
+
+drugev  <- data.matrix(x %>% group_by(region, year) %>% summarize(weighted.mean(drugev, wt, na.rm=T)))
+drugev  <- drugev[!is.nan(drugev[,3]),]
+vocev   <- data.matrix(x %>% group_by(region, year) %>% summarize(weighted.mean(vocev, wt, na.rm=T)))
+vocev   <- data.matrix(vocev[!is.nan(vocev[,3]),])
+work    <- data.matrix(x %>% group_by(region, year) %>% summarize(weighted.mean(work, wt, na.rm=T)))
+work    <- data.matrix(work[!is.nan(work[,3]),])
+edev    <- data.matrix(x %>% group_by(region, year) %>% summarize(weighted.mean(edev, wt, na.rm=T)))
+edev    <- data.matrix(edev[!is.nan(edev[,3]),])
+
+dimnames(drugev) <- dimnames(vocev) <- dimnames(work) <- dimnames(edev) <-
+  list(NULL, c("region","year","xbar"))
+
+drugev <- data.matrix(data.table(drugev)  %>%
+  arrange(region, year) %>%
+  group_by(region) %>%
+  mutate(perc_diff = 100 * (xbar - lag(xbar))/lag(xbar)))
+
+vocev <- data.matrix(data.table(vocev)  %>%
+  arrange(region, year) %>%
+  group_by(region) %>%
+  mutate(perc_diff = 100 * (xbar - lag(xbar))/lag(xbar)))
+
+work <- data.matrix(data.table(work)  %>%
+  arrange(region, year) %>%
+  group_by(region) %>%
+  mutate(perc_diff = 100 * (xbar - lag(xbar))/lag(xbar)))
+
+edev <- data.matrix(data.table(edev) %>%
+  arrange(region, year) %>%
+  group_by(region) %>%
+  mutate(perc_diff = 100 * (xbar - lag(xbar))/lag(xbar)))
+
+# Creating the figure
+par(mfrow=c(1,4))
+par(fig=c(0,.29, 0,1))
+plot(drugev[drugev[,"region"]==1,"year"],
+     drugev[drugev[,"region"]==1,"perc_diff"]*100,
+     type="b", pch=16, main="Drug Program",
+     xlim=c(1986, 2016), ylim=c(-60,40), col="skyblue2",
+     axes=F, ylab="Percentage Change", xlab="")
+axis(1)
+axis(2)
+lines(drugev[drugev[,"region"]==2,"year"], drugev[drugev[,"region"]==2,"perc_diff"],
+      type="b", pch=17, col="dodgerblue")
+
+lines(drugev[drugev[,"region"]==3,"year"], drugev[drugev[,"region"]==3,"perc_diff"],
+      type="b", pch=18, col="red")
+
+lines(drugev[drugev[,"region"]==4,"year"], drugev[drugev[,"region"]==4,"perc_diff"],
+      type="b", pch=19, col="blue")
+
+legend(1986, 80, c("Northeast","Midwest","South","West"),
+       pch=16:19, col=c("skyblue2", "dodgerblue", "red","blue"),
+       lty=1, bty="n", cex=1.1)
+abline(v=seq(1985, 2015, 10), h=seq(-60,40, 20), col="gray",lty=3)
+par(new=T)
+par(fig=c(.237,.527, 0,1))
+plot(edev[edev[,"region"]==1,"year"],
+     edev[edev[,"region"]==1,"perc_diff"], type="b", pch=16, main="Education",
+     xlim=c(1986, 2016), ylim=c(-60,40), col="skyblue2",
+     axes=F, ylab="", xlab="")
+axis(1)
+lines(edev[edev[,"region"]==2,"year"], edev[edev[,"region"]==2,"perc_diff"], type="b", pch=17, col="dodgerblue")
+lines(edev[edev[,"region"]==3,"year"], edev[edev[,"region"]==3,"perc_diff"], type="b", pch=18, col="red")
+lines(edev[edev[,"region"]==4,"year"], edev[edev[,"region"]==4,"perc_diff"], type="b", pch=19, col="blue")
+abline(v=seq(1985, 2015, 10), h=seq(-60,40, 20), col="gray",lty=3)
+par(new=T)
+par(fig=c(.473,.763, 0,1))
+plot(vocev[vocev[,"region"]==1,"year"],
+     vocev[vocev[,"region"]==1,"perc_diff"], type="b", pch=16, main="Job Training",
+     xlim=c(1986, 2016), ylim=c(-60,40), col="skyblue2",
+     axes=F, ylab="", xlab="")
+axis(1)
+lines(vocev[vocev[,"region"]==2,"year"], vocev[vocev[,"region"]==2,"perc_diff"], type="b", pch=17, col="dodgerblue")
+lines(vocev[vocev[,"region"]==3,"year"], vocev[vocev[,"region"]==3,"perc_diff"], type="b", pch=18, col="red")
+lines(vocev[vocev[,"region"]==4,"year"], vocev[vocev[,"region"]==4,"perc_diff"], type="b", pch=19, col="blue")
+abline(v=seq(1985, 2015, 10), h=seq(-60,40, 20), col="gray",lty=3)
+par(new=T)
+par(fig=c(.71,1.0, 0,1))
+plot(work[work[,"region"]==1,"year"],
+     work[work[,"region"]==1,"perc_diff"], type="b", pch=16, main="Work",
+     xlim=c(1986, 2016), ylim=c(-60,40), col="skyblue2",
+     axes=F, ylab="", xlab="")
+axis(1)
+lines(work[work[,"region"]==2,"year"], work[work[,"region"]==2,"perc_diff"], type="b", pch=17, col="dodgerblue")
+lines(work[work[,"region"]==3,"year"], work[work[,"region"]==3,"perc_diff"], type="b", pch=18, col="red")
+lines(work[work[,"region"]==4,"year"], work[work[,"region"]==4,"perc_diff"], type="b", pch=19, col="blue")
+abline(v=seq(1985, 2015, 10), h=seq(-60,40, 20), col="gray",lty=3)
+```
+
+
+
+Figure \@ref(fig:rehab-part) shows the original paper's visualisation of participation rates for inmates across 25 years. We used the same dataset to plot the percentage change between years instead in Figure \@ref(fig:rehab-part-new), providing another angle with which to view the original data. At a high level, our reproduction reinforces the original claim that rehabilitation programs are in decline amidst the generally worsening conditions of prison. This new lens also reveals several pockets of strength, where the rate of change of participation is growing or declining less severely. These 2 insights can offer an actionable way forwards to improving the state of incarceration. 
+
+
+```{r case-original, fig.cap="Cumulative Case Rate (per 1000) on Jan 11, 2021", fig.height = 8, fig.width = 6, echo=F, warning=F}
+x <- read.csv("../../inputs/data/all-states-history.csv", header=T)                    # reading state covid data
+
+x1218 <- x[x$date=="2020-12-18",]                                     # data from 12/18/20
+pop <- read.csv("../../inputs/data/statepop.csv", header=F)                            # state population data
+ind <- match(x1218$state, pop[,2])                                    # matching states
+x1218$pop <- pop[ind,3]                                               # state population
+x1218$ccr <- x1218$positive/(x1218$pop*1e6)  
+
+x1 <- read.csv("../../inputs/data/COVID-19 Cases in State and Federal Prison Systems.csv",
+               header=T)                                             # reading prison covid data
+
+x1 <- lapply(x1, function(i) { sub(",", "", i) })                    # data cleaning
+x1 <- lapply(x1, function(i) { sub("NR", NA, i) })
+x1[names(x1)[c(2:7,9)]]  <- lapply(x1[names(x1)[c(2:7,9)]], as.numeric)
+x1$incpop <- x1$Incarcerated.Positive/x1$Incarcerated.Case.rate.per.1.000
+
+ind <- match(x1218$state, x1$Prison.System)                           # matching states
+ccr <- data.frame(pop=1000*x1218$ccr,
+                  prisn=x1$Incarcerated.Case.rate.per.1.000[ind],
+                  state=x1$state[ind])                               # case rate dataframe
+ccr <- ccr[complete.cases(ccr),]
+
+o1 <- order(ccr[,2])
+n1 <- length(o1)
+
+par(mfrow=c(1,2))
+
+par(fig=c(.1,1,0,1))
+plot(ccr[o1,2], 1:n1, pch="", xlim=c(0,800), xlab="", ylab="", yaxt='n')
+abline(h=1:n1, lty=5, col="gray")
+axis(1)
+points(ccr[o1,1], 1:n1, pch=17, col="blue")
+points(ccr[o1,2], 1:n1, pch=16, col="red")
+mtext(ccr$state[o1], side=2, at=1:n1, las=1, line=.5, cex=.75)
+legend(450, 7, c("Prison","General population"), pch=c(16, 17),
+       col=c("red","blue"), bty="n", cex=1.1)
+
+x122 <- x[x$date=="2021-01-22",]                                     # data from 1/22/21
+pop <- read.csv("../../inputs/data/statepop.csv", header=F)                            # state population data
+ind <- match(x122$state, pop[,2])                                    # matching states
+x122$pop <- pop[ind,3]                                               # state population
+x122$ccr <- x122$death/(x122$pop*1e6)                             # state case rate
+```
+
+
+```{r case-new, fig.cap="Cumulative Mortality Rate (per 1000) on Jan 11, 2021", fig.height = 8, fig.width = 6, echo=F, warning=F}
+x2 <- read.csv("../../inputs/data/COVID-19 Cases in State and Federal Prison Systems.csv",
+               header=T)                                             # reading prison covid data
+
+x2 <- lapply(x2, function(i) { sub(",", "", i) })                    # data cleaning
+x2 <- lapply(x2, function(i) { sub("NR", NA, i) })
+x2[names(x2)[c(2:7,9)]]  <- lapply(x2[names(x2)[c(2:7,9)]], as.numeric)
+x2$incpop <- x2$Incarcerated.Deaths/x2$Incarcerated.Case.rate.per.1.000
+
+ind <- match(x122$state, x1$Prison.System)                           # matching states
+ccr2 <- data.frame(pop=1000*x122$ccr,
+                  prisn=x1$Incarcerated.Case.rate.per.1.000[ind],
+                  state=x1$state[ind])                               # case rate dataframe
+ccr2 <- ccr2[complete.cases(ccr),]
+
+o1 <- order(ccr2[,2])
+n1 <- length(o1)
+
+
+
+###Creating the new Figure with morality rates
+
+par(fig=c(.1,1,0,1))
+plot(ccr[o1,2], 1:n1, pch="", xlim=c(0,800), xlab="", ylab="", yaxt='n')
+abline(h=1:n1, lty=5, col="gray")
+axis(1)
+points(ccr[o1,1], 1:n1, pch=17, col="purple")
+points(ccr2[o1,2], 1:n1, pch=16, col="orange")
+mtext(ccr$state[o1], side=2, at=1:n1, las=1, line=.5, cex=.75)
+legend(450, 10, c("Prison","General population"), pch=c(16, 17),
+       col=c("orange","purple"), bty="n", cex=1.1)
+```
+
+<insert some stuff>
+
+
+\newpage
+
+# Discussion
+
+## The Retreat from Rehabilitation
+
+The original paper explores the divided consensus on prison rehabilitation, taking a section to cover its evolution and historically mixed results. It concludes that such rehabilitation programs have slightly positive effects, yet participation in them has decreased as deteriorating in-prison factors like healthcare have pulled attention away from bettering the post-incarceration lives of inmates.
+
+The concept of captive rehabilitation in the US has roots in the Jacksonian period, where the purpose of prisons were re-cast as being for correction in addition to penalty. Work and education programs were prioritized, slowly usurping traditional elements of incarceration like whipping. However, evaluations of such strategies post-WW2 were largely inconclusive when determining welfare improvements or reductions in recidivism. Skepticism grew, forcing programs to evolve further under new theories; for example, the Canadian-born Risk Principle proposed that the level of intervention should be proportional to an individual’s risk of re-offending. 
+
+The original section culminates in examining inmate participation of rehabilitation programs in the US, with Figure \@ref(fig:rehab-part) showing the original plot of participation rates across 4 program types (Drugs, Education, Job Training, Work Assignments) and 4 regions (Northeast, Midwest, South, West). Initial analysis showed that participation appeared to be generally higher in the Northeast, yet there is no region that is definitively higher or lower across the board. What is apparent is a broad reduction in participation across all programs and regions, although the severity of this change is difficult to quantify. 
+
+However, the context that these programs are provided within can heavily influence participation, a limitation that the original paper acknowledges but does not address in depth. In particular, the supply of programs likely varies across prisons and is constrained on a whole, making participation beyond a certain point theoretically impossible. Program slots are unlikely to have matched the massive increase in total inmates, lessening their effectiveness and potentially kicking off a vicious cycle; decreasing rehabilitation availability can lead to increased recidivism, straining those same programs that have not expanded to serve already-bloated numbers. It is therefore important to understand that declining participation rates can be a symptom of both supply- and demand-side issues. 
+
+This original plot (Figure \@ref(fig:rehab-part)) and accompanying interpretations raised some questions, chiefly regarding the chosen segmentation by region and program type. On the former, looking at 4 regions provides more granularity than examining the US as a whole, but still obscures key differences in a country that differs heavily from state to state. The relevant survey data for every state may be difficult to obtain, as the datasets used here were pre-aggregated into regions; a more feasible extension could be to dive deep into a region that exhibits more unique characteristics, such as the South and a stark decrease in drug program participation. Another dimension to evaluate could be the rural/urban split; perhaps participation differs based on prospective opportunities in neighboring areas, of which a rural/urban split could play a large influence. The segmentation by program type is pre-set by datasets from the Bureau of Justice Statistics (BJS), rendering a different split significantly more difficult to obtain. On a whole, we feel that the specificity of examining these 4 programs through the lens of 4 particular regions could obscure insights regarding the effectiveness of these programs and potential improvements. 
+
+We elected to take the same segmentation but plot percentage change in participation instead of absolute rates (Figure \@ref(fig:rehab-part-new)), hoping to tease out additional insights from the same dataset. In particular, we set out to evaluate whether face-value insights like the south being different to other regions were obscuring other angles of the situation. Using the same dataset does create inherent limitations, but allows for better comparison with the original findings. The availability of more detailed BJS data also played a role in this decision, as the survey used in the original paper was already one of the more comprehensive instruments on the topic. 
+
+With the added dimension of percentage change, we concluded the following from a descriptive point of view: 
+
+- The South does seems to differ on drug program participation from both an absolute and proportional change perspective
+- Participation in educational programs has converged in 2016, but the proportional change in participation shows that each region had a very different story to get there. Participation in job training reflects similar trends but to a less severe extent 
+- Participation in work assignments seems to be trending downward in a similar pattern for all regions, and the percentage changes have instead converged to almost identical (around -20% between 1995 and 2016)
+
+There are several sobering implications from these points, primarily surrounding the effectiveness of current rehabilitation systems and specific areas to potentially target for impactful improvements. 
+
+First, it appears that participation in these programs is converging in general. This is across all regions in some way (either in actual rates or rate of change), for whatever reason - and for better or worse. These patterns combine to paint a picture of collective decline in program participation, reinforcing the claim made in the original paper. In conjunction with  other studies, both broad-based and anecdotal, we feel more confident in concluding that there is an issue with how rehabilitation programs are currently run in US prisons. Further exploration can be done on whether this is a supply or demand issue, but it reflects a key shortcoming with mass incarceration. 
+
+Second, there are pockets of growth or at least of slowing decline in rehabilitation participation. In particular, the West and South regions for education programs and job training show some strength. Governments wishing to improve their rehabilitation programs can tap into these areas of strength; increasing their effectiveness can kick off a virtuous cycle, where better post-incarceration outcomes incentivize greater participation and further investment. 
+
+The aforementioned areas could be a cost effective way of kickstarting improvements in rehabilitation programs, offering governments a method of gaining early momentum en route to improving the whole system. 
+
+
+## Race-based Health and Safety Implications
+In the general United States population, there are several potential factors that could contribute to the increase in homicide victimization affecting black people, most of which can be attributed to the staggering number of racial disparities that exist on an economic, political, environmental, and socio-cultural scale. Data measuring differences in demographic trends show that black Americans are more than twice as likely to experience poverty as white Americans, relating to issues such as the ongoing racial gap in income equality, education levels, and unemployment rates (Pew Research Center 2016). Evidence from studies conducted on a global scale show that income inequality and higher incidences of poverty are major driving forces in the rise of crime rates in societies around the world (Anser et al. 2020). 
+
+It is essential to consider these factors when examining how homicide victimization in prison affects members of different races. The persistence of violent crime in society affecting Black communities has become such a prevalent issue that their risk of victimization is notably lower in prison than in the population. The opposite is true for white people, as their risk of homicide victimization in prison is almost twice as high as their risk of non-firearm homicide in society. 
+
+While the original paper makes several useful points with regards to the age-related victimization risk both inside and outside of prison, it is certainly worth examining how these risks vary on the basis of race in order to better understand the implications of systemic racial inequality in society. 
+
+
+## Ill-prepared for the COVID crisis?
+### COVID-19 Case Rates in Prison vs Population
+It was a common observation across multiple periods of time that prisons were consistently leading hotspots for COVID-19 outbreaks throughout 2020 [@Wang]. Dozens of deaths among prison staff and inmates were recorded during outbreaks at large jail facilities such as Rikers Island in New York and Cook County in Chicago. 
+
+### Could Prison be safer for COVID?
+Across the figures and articles so far, the general trend points toward prisons posing a higher risk of contracting COVID-19. Upon closer examination of Figure 4 from the original paper as shown above, “the measured COVID-19 case rate in prison exceeded the case rate in the general population in nearly all states.” Nearly but not all, as we can see among the three states (Mississippi, Georgia, and Alabama) that the COVID-19 case rates are lower in prison than the general prison. That could be interpreted as prison being a more COVID safe environment than being among the general population. The idea of being safer in prison from an infectious disease seems bizarre. Upon going back to the peak day of COVID-19 cases back in 2020 on December 18, we see in Figure \@ref(fig:case-original) that out of the three previous outliers, only Alabama remains to have a case rate in prison lower than the case rate in the general population. 
+
+Moving on to observe mortality rates in Figure \@ref(fig:case-new), we still see Alabama having a lower mortality rate from COVID-19 in prison than in the general population. Potential explanations include a more sterile and socially distant prison environment, the general population in the state not abiding to COVID-19 protocols, or even issues with data quality. 
+
+According to Morgan Simon from Forbes [@Simon], the Alabama House of Representatives approved a trio-bill package that would push 1.3 billion USD (800 million USD from a new bond measure, 400 million USD which consists of 22% of the state’s COVID relief funds) towards funding incarceration facilities. Many local advocates found this decision to be obscene as this would be five times more than the 80 million USD of COVID relief funds (as part of the American Rescue Plan Act) allocated to hospitals. Despite the petition of investors and NGOs, US Department of Treasury stated they do not pre-approve specific uses of these funds. The use of relief to build and expand prisons may proceed although the Treasury would continue to monitor expenditures in case of violations where misused funds are repaid to the federal government. These plans would still take a few years to develop and would not have immediate effect in our observations so there must be some other explanation for the lower COVID case rates in Alabama prisons.
+
+### A closer Look at Alabama's Prison Systems
+From our previous discussion, it may seem that Alabama is ahead of many other jurisdictions in focusing to improve prison conditions and capacities despite other directions toward hospitals, transportation, and education. Unfortunately, this is likely to remedy the slew of lawsuits by the Department of Justice (DOJ) against the Alabama prison system for unconstitutional treatment of those incarcerated. [@Cason] Alabama prisons saw some of the country’s highest rate of homicide, suicide, and sexual assault among prisoners. The DOJ presented a 56-page report for the severe deficiencies in staffing and supervision with less than 20% of allotted positions filled at some incarceration facilities in Alabama. The common use of solitary confinement and excessive force also contribute to the violence. 
+
+We can speculate that due to the understaffing situation, there isn’t sufficient tabulation, and we may not fully grasp the COVID-19 situation in Alabama prisons. It is probable that the numbers of cases are greatly underestimated and overbore by the critically high violence. Even if the allocated 1.3 billion USD does pass into incarceration facilities, only with better management and supervision will the situation improve, hence our data too.
+
+## Weaknesses and next steps
+
+Weaknesses and next steps should also be included.
+
+\newpage
+
+\appendix
+
+# Appendix {-}
+```{r echo=FALSE, warning=FALSE, message=FALSE, fig.cap="Last available data scrape of the COVID Prison Project"}
+y <- data.table(read.csv("../../inputs/data/covid19_prison_cases_latest.csv")) %>% rename(state = ï..state, general_population = General.population, incarcerated = Incarcerated.population)
+
+kable(y, "pipe", caption = "Last available data scrape of the COVID Prison Project", col.names=c("State", "General Population Case Rates", "Incarcerated Case Rates"), align=c("c","c"))
+```
+
+```{r echo=FALSE, fig.cap="General vs. Incarcerated Case Rates on March 31, 2021"}
+y.long <- melt(y)
+y.wide <- melt(y)
+ggplot(data = y.long, aes(x=state, y=value, fill=variable))+
+  geom_bar(stat='identity',position='dodge') +
+  ggtitle("General vs Incarcerated Case Rates on Mar 31, 2021") +
+  xlab("US States") +
+  ylab("Cases per 1,000") +
+  theme(axis.text.x = element_text(angle = 90, vjust=0.5, hjust=0.5, size=7)) +
+  scale_fill_discrete(name = "Population Type")
+```
+
+
+\newpage
+
+
+# References
+
+
