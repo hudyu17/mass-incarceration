@@ -1,4 +1,6 @@
 ## Overview
+Featured at the [University of Toronto 2022 Data Sciences Institute Student-Led Reproducibility Challenge](https://datasciences.utoronto.ca/student-teams-investigate-just-how-difficult-it-is-to-reproduce-research/).
+
 This repo features a reproduction of Bruce Western's paper, [`Inside the Box: Safety, Health, and Isolation in Prison`](https://pubs.aeaweb.org/doi/pdfplus/10.1257/jep.35.4.97), containing `R` scripts and a final `PDF` report [(link here)](https://github.com/hudyu17/mass-incarceration/blob/main/outputs/paper/paper.pdf). This analysis revealed that while there are major deficiencies with mass incarceration in the US, pockets of strength still exist to improve the system for all. 
 
 A replication using the Social Science Reproduction Platform was also produced: [link here](https://www.socialsciencereproduction.org/reproductions/f4c25f83-2c8b-448e-be76-760e02694112/index)
